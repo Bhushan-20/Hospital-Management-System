@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { RxAvatar } from 'react-icons/rx';
 import Logo from '../../assets/Logo1.png';
@@ -7,6 +7,13 @@ import Dashboard from "../../assets/icons/dashboard.png";
 import Doctor from "../../assets/icons/doctor.png";
 import Patient from "../../assets/icons/patient.png";
 import Pharmacy from "../../assets/icons/pharmacy.png";
+import { useSelector } from 'react-redux';
+import PatientAvatar from "../../assets/patient.jpg";
+import DoctorAvatar from "../../assets/doctor.jpg";
+import AdminAvatar from "../../assets/admin.png";
+
+
+
 
 const links = [
   {
@@ -38,6 +45,25 @@ const links = [
 
 const Sidebar = () => {
   const location = useLocation();
+   const user = useSelector((state) => state.user.user);
+useEffect(() => {
+  console.log("User Name", user.name);
+}, [user]);
+
+const getAvatarUrlByRole = (role) => {
+
+  switch (role) {
+    case "ADMIN":
+      return AdminAvatar;
+    case "DOCTOR":
+     return DoctorAvatar;
+    case "PATIENT":
+      return Patient;
+    default:
+      return `https://api.dicebear.com/7.x/avataaars/svg?seed=default`;
+  }
+};
+
 
 
   return (
@@ -52,11 +78,12 @@ const Sidebar = () => {
       {/* Avatar (Funny or Stylish) */}
       <div className="flex flex-col items-center mb-10">
         <img
-          src="https://api.dicebear.com/7.x/avataaars/svg?seed=bhushan"
+          src={getAvatarUrlByRole(user.role)}
           alt="avatar"
-          className="w-16 h-16 rounded-full shadow-xl hover:scale-105 transition duration-300"
+          className="w-24 h-24 rounded-full shadow-xl hover:scale-105 transition duration-300"
         />
-        <p className="text-xl font-bold text-gray-800 mt-2 tracking-wide">Bhushan</p>
+        <p className="text-xl font-bold text-gray-800 mt-2 tracking-wide">{user.name}</p>
+        <p className="font-semibold text-gray-800">{user.role}</p>
       </div>
 
 

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @Validated
-@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -48,7 +47,7 @@ public class UserController {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword()));
         }
         catch(AuthenticationException e){
-           return  ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+           throw new HmsException("INVALID_CREDENTIALS");
         }
         final UserDetails userDetails = userDetailsService.loadUserByUsername(loginDTO.getEmail());
         final String jwtToken = jwtUtil.generateToken(userDetails);

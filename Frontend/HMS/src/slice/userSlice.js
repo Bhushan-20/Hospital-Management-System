@@ -1,32 +1,26 @@
+// src/slice/userSlice.js
 import { createSlice } from "@reduxjs/toolkit";
+import { jwtDecode } from "jwt-decode";
+
+const token = localStorage.getItem("token");
 
 const initialState = {
-    user: localStorage.getItem("user") ? JSON.parse(localStorage.getItem("user")) : null,
-    userReal: null,
-    loading: false,
+  user: token ? jwtDecode(token) : null,
 };
 
 const userSlice = createSlice({
-    name: "user",
-    initialState: initialState,
-    reducers: {
-        setUser(state, action) {
-            state.user = action.payload;
-            localStorage.setItem("user", JSON.stringify(action.payload));
-        },
-        setUserReal(state, action) {
-            state.userReal = action.payload;
-        },
-        setLoading(state, action) {
-            state.loading = action.payload;
-        },
-        clearUser(state) {
-            state.user = null;
-            state.userReal = null;
-            localStorage.removeItem("user");
-        },
+  name: "user",
+  initialState,
+  reducers: {
+    setUser: (state, action) => {
+      const decodedUser = jwtDecode(action.payload);
+      state.user = decodedUser;
     },
+    clearUser: (state) => {
+      state.user = null;
+    },
+  },
 });
 
-export const { setUser, setUserReal, setLoading, clearUser } = userSlice.actions;
+export const { setUser, clearUser } = userSlice.actions;
 export default userSlice.reducer;

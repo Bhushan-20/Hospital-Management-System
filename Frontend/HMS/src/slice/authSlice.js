@@ -1,27 +1,22 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  signupData: null,
-  loading: false,
-  token: localStorage.getItem("token") ? JSON.parse(localStorage.getItem("token")) : null,
-};
+const token = localStorage.getItem("token");
 
 const authSlice = createSlice({
-  name: "auth",
-  initialState: initialState,
+  name: "jwt",
+  initialState: token || null,
   reducers: {
-    setSignupData(state, value) {
-      state.signupData = value.payload;
+    setToken: (state, action) => {
+      const token = action.payload;
+      localStorage.setItem("token", token);
+      return token; // just store the raw token
     },
-    setLoading(state, value) {
-      state.loading = value.payload;
-    },
-    setToken(state, value) {
-      state.token = value.payload;
+    removeToken: () => {
+      localStorage.removeItem("token");
+      return null;
     },
   },
 });
 
-export const { setSignupData, setLoading, setToken } = authSlice.actions;
-
+export const { setToken, removeToken } = authSlice.actions;
 export default authSlice.reducer;

@@ -1,13 +1,25 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { FaHeartbeat } from 'react-icons/fa';
 import { FiLock, FiMail } from 'react-icons/fi';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { loginUser } from '../services/operations/authAPI';
+import { useNavigate } from 'react-router-dom';
+import Loader from '../Components/Loader'
+import { useDispatch } from 'react-redux';
+import { setToken } from '../slice/authSlice';
+import {jwtDecode} from "jwt-decode";
+import { setUser } from '../slice/userSlice';
+
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const validate = () => {
     const newErrors = {};
@@ -26,13 +38,33 @@ const LoginPage = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+
     if (validate()) {
-      console.log('Form is valid. Proceed to login...');
-      // Submit login logic here
+      try {
+        setIsLoading(true); 
+        const userData = { email, password };
+        const response = await loginUser(userData);
+
+        toast.success("Login successful");
+        dispatch(setToken(response));
+        dispatch(setUser(response));
+        //console.log(jwtDecode(response));
+
+        navigate("/dashboard");
+
+      } catch (error) {
+        const errorMessage =
+        error?.response?.data?.errorMessage || "Login failed";
+      
+        toast.error(errorMessage);
+      }finally{
+        setIsLoading(false);
+      }
     }
   };
+
 
   const handleGuestLogin = () => {
     // simulate guest login
@@ -41,7 +73,10 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-100 via-white to-pink-100 flex items-center justify-center p-4 relative overflow-hidden">
+    
+    <>
+    {isLoading && <Loader />}
+      <div className="min-h-screen bg-gradient-to-br from-red-100 via-white to-pink-100 flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-red-300 opacity-20 rounded-full blur-3xl z-0 animate-pulse" />
       <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-pink-400 opacity-20 rounded-full blur-2xl z-0 animate-pulse" />
 
@@ -134,12 +169,13 @@ const LoginPage = () => {
 
           <p className="text-sm text-center text-gray-600">
             Don't have an account?{' '}
-            <span className="text-red-500 hover:underline cursor-pointer">Sign Up</span>
+            <span className="text-red-500 hover:underline cursor-pointer" onClick={() => navigate('/register')}>Sign Up</span>
           </p>
 
         </div>
       </div>
     </div>
+    </>
   );
 };
 

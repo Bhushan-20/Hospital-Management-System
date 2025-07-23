@@ -6,12 +6,21 @@ import {
   TbSearch,
   TbArrowsLeftRight,
   TbTrash,
+  TbLogout,
 } from 'react-icons/tb';
 import { FiChevronDown } from 'react-icons/fi';
+import Patient from "../../assets/icons/patient.png";
+import { useSelector, useDispatch } from 'react-redux';
+// import { logout } from "../../redux/slices/userSlice"; // Adjust the path
+import DoctorAvatar from "../../assets/doctor.jpg";
+import AdminAvatar from "../../assets/admin.png";
+import { removeToken } from '../../slice/authSlice';
 
 const ProfileMenu = () => {
   const [open, setOpen] = useState(false);
   const menuRef = useRef();
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.user.user);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -23,36 +32,52 @@ const ProfileMenu = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const handleLogout = () => {
+    dispatch(removeToken());
+    setOpen(false);
+  };
+
+  const getAvatarUrlByRole = (role) => {
+    switch (role) {
+      case "ADMIN":
+        return AdminAvatar;
+      case "DOCTOR":
+        return DoctorAvatar;
+      case "PATIENT":
+        return Patient;
+      default:
+        return `https://api.dicebear.com/7.x/avataaars/svg?seed=default`;
+    }
+  };
+
   return (
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 px-2 py-1 rounded-full hover:bg-red-100 transition"
+        className="flex items-center gap-2 px-2 py-1 rounded-full hover:shadow transition"
       >
-        {/* Funny Avatar or Initial */}
         <img
-          src="https://api.dicebear.com/7.x/avataaars/svg?seed=bhushan"
+          src={getAvatarUrlByRole(user?.role)}
           alt="avatar"
-          className="w-10 h-10 rounded-full border-2 border-red-200 shadow-md"
+          className="w-12 h-12 rounded-full border-2 border-richblack-200 shadow-md"
         />
         <FiChevronDown className="text-red-600 text-lg" />
       </button>
 
-      {/* Dropdown menu */}
       {open && (
-        <div
-          className="absolute right-0 mt-3 w-64 bg-white/80 backdrop-blur-md shadow-2xl border border-red-100 rounded-xl overflow-hidden z-20 animate-slide-fade"
-        >
+        <div className="absolute right-0 mt-3 w-72 bg-white/80 backdrop-blur-md shadow-xl border border-red-100 rounded-xl z-50 animate-slide-fade">
           {/* User Info */}
-          <div className="flex items-center gap-3 px-4 py-4 border-b border-red-100 bg-white/60">
+          <div className="flex items-center gap-3 px-4 py-4 border-b border-red-100 bg-white/70">
             <img
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=bhushan"
+              src={getAvatarUrlByRole(user?.role)}
               alt="avatar"
               className="w-12 h-12 rounded-full border border-red-200"
             />
             <div>
-              <p className="font-semibold text-gray-800">Bhushan Patil</p>
-              <p className="text-sm text-gray-500">Software Engineer</p>
+              <p className="font-semibold text-gray-800 text-base">{user?.name}</p>
+              <p className="text-xs text-white bg-red-500 px-2 py-1 rounded-full w-fit mt-1">
+                {user?.role}
+              </p>
             </div>
           </div>
 
@@ -71,6 +96,12 @@ const ProfileMenu = () => {
               <MenuItem icon={<TbArrowsLeftRight size={18} />} label="Transfer my data" />
               <MenuItem icon={<TbTrash size={18} />} label="Delete my account" color="red" />
             </Section>
+
+            <div className="border-t my-1 border-red-100" />
+
+            <Section title="">
+              <MenuItem icon={<TbLogout size={18} />} label="Logout" onClick={handleLogout} color="red" />
+            </Section>
           </div>
         </div>
       )}
@@ -81,25 +112,26 @@ const ProfileMenu = () => {
 function Section({ title, children }) {
   return (
     <div className="mb-2">
-      <p className="text-xs text-gray-500 font-medium px-3 py-1">{title}</p>
+      {title && <p className="text-xs text-gray-500 font-medium px-3 py-1">{title}</p>}
       <div>{children}</div>
     </div>
   );
 }
 
-function MenuItem({ icon, label, shortcut, color = 'black' }) {
+function MenuItem({ icon, label, shortcut, onClick, color = 'black' }) {
   const baseColor =
     color === 'red'
       ? 'text-red-600 hover:bg-red-50'
-      : 'text-gray-800 hover:bg-gray-50';
+      : 'text-gray-800 hover:bg-gray-100';
 
   return (
     <div
       className={`flex items-center justify-between px-4 py-2 cursor-pointer rounded-lg transition-all ${baseColor}`}
+      onClick={onClick}
     >
       <div className="flex items-center gap-3">
         {icon}
-        <span className="text-sm">{label}</span>
+        <span className="text-sm font-medium">{label}</span>
       </div>
       {shortcut && <span className="text-xs text-gray-400">{shortcut}</span>}
     </div>

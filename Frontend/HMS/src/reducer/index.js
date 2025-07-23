@@ -3,7 +3,7 @@ import authReducer from "../slice/authSlice";
 import userReducer from "../slice/userSlice";
 
 const rootReducer = combineReducers({
-    auth: authReducer,
+    jwt: authReducer,
     user: userReducer
 });
 

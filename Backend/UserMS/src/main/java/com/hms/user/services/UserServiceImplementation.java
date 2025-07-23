@@ -29,7 +29,7 @@ public class UserServiceImplementation implements UserService {
 
     @Override
     public UserDTO loginUser(UserDTO userDTO) throws HmsException {
-        User user = userRepository.findByEmail(userDTO.getEmail()).orElseThrow(()->new HmsException("USER_NOT_FOUND") );
+        User user = userRepository.findByEmail(userDTO.getEmail()).orElseThrow(()->new HmsException("INVALID_CREDENTIALS") );
         if(!passwordEncoder.matches(userDTO.getPassword(),user.getPassword())){
             throw new HmsException("INVALID_CREDENTIALS");
         }

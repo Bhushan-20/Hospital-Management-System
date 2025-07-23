@@ -1,7 +1,13 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { FaHeartbeat, FaUserAlt } from 'react-icons/fa';
 import { FiMail, FiPhone, FiLock } from 'react-icons/fi';
 import { AiOutlineEye, AiOutlineEyeInvisible } from 'react-icons/ai';
+import { useDispatch } from "react-redux"
+import { useNavigate } from "react-router-dom"
+import { setSignupData } from '../slice/authSlice';
+import { registerUser } from '../services/operations/authAPI';
+import Loader from '../Components/Loader'
 
 const roles = [
   { label: 'Patient', value: 'PATIENT' },
@@ -10,10 +16,12 @@ const roles = [
 ];
 
 const RegisterPage = () => {
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    mobile: '',
     password: '',
     confirmPassword: '',
     role: 'PATIENT', 
@@ -34,40 +42,69 @@ const RegisterPage = () => {
 
   const validate = () => {
     const newErrors = {};
-    const { name, email, mobile, password, confirmPassword } = formData;
+    const { name, email, password, confirmPassword } = formData;
 
     if (!name.trim()) newErrors.name = 'Name is required.';
     if (!email.trim()) newErrors.email = 'Email is required.';
     else if (!/^\S+@\S+\.\S+$/.test(email)) newErrors.email = 'Invalid email format.';
 
-    if (!mobile.trim()) newErrors.mobile = 'Mobile number is required.';
-    else if (!/^\d{10}$/.test(mobile)) newErrors.mobile = 'Enter valid 10-digit number.';
-
     if (!password) {
-    newErrors.password = 'Password is required.';
-  } else {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!passwordRegex.test(password)) {
-      newErrors.password =
-        'Password must be at least 8 characters, include 1 uppercase, 1 lowercase, 1 number, and 1 special character.';
+      newErrors.password = 'Password is required.';
+    } else {
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+      if (!passwordRegex.test(password)) {
+        newErrors.password =
+          'Password must be at least 8 characters, include 1 uppercase, 1 lowercase, 1 number, and 1 special character.';
+      }
     }
-  }
-    if (password !== confirmPassword) newErrors.confirmPassword = 'Passwords do not match.';
+
+    if (password !== confirmPassword) {
+      newErrors.confirmPassword = 'Passwords do not match.';
+    }
 
     setErrors(newErrors);
+
+    const firstError = Object.values(newErrors)[0];
+    if (firstError) toast.error(firstError); // 🔥 react-hot-toast version
+
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
+    
     if (validate()) {
-      console.log('Registering with data:', formData);
-      // Call backend here
+      const signupData = { ...formData };
+      
+      try {
+        setIsLoading(true);
+        const data = await registerUser(signupData);        
+        toast.success("Registration successful!");
+        navigate("/login");
+
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          role: "PATIENT", // reset to default role
+        });
+      } catch (error) {
+        const errorMessage =
+          error?.response?.data?.errorMessage || "Registration failed";
+
+        toast.error(errorMessage);
+      }finally{
+        setIsLoading(false);
+      }
     }
   };
 
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-100 via-white to-pink-100 flex items-center justify-center p-4 relative overflow-hidden">
+    <>
+    {isLoading && <Loader />}
+        <div className="min-h-screen bg-gradient-to-br from-red-100 via-white to-pink-100 flex items-center justify-center p-4 relative overflow-hidden">
       <div className="absolute -top-24 -left-24 w-96 h-96 bg-red-300 opacity-20 rounded-full blur-3xl z-0 animate-pulse" />
       <div className="absolute -bottom-20 -right-20 w-72 h-72 bg-pink-400 opacity-20 rounded-full blur-2xl z-0 animate-pulse" />
 
@@ -137,21 +174,6 @@ const RegisterPage = () => {
               {errors.email && <p className="text-red-500 text-xs mt-1 ml-1">{errors.email}</p>}
             </div>
 
-            {/* Mobile */}
-            <div className="relative">
-              <FiPhone className="absolute top-1/2 left-3 transform -translate-y-1/2 text-red-400" />
-              <input
-                type="text"
-                name="mobile"
-                placeholder="Mobile Number"
-                value={formData.mobile}
-                onChange={handleChange}
-                className={`w-full pl-10 pr-4 py-3 rounded-xl bg-white border ${
-                  errors.mobile ? 'border-red-500' : 'border-gray-200'
-                } focus:outline-none focus:border-red-400 text-sm`}
-              />
-              {errors.mobile && <p className="text-red-500 text-xs mt-1 ml-1">{errors.mobile}</p>}
-            </div>
 
             {/* Password */}
             <div className="mb-1">
@@ -217,11 +239,12 @@ const RegisterPage = () => {
 
           <p className="text-sm text-center text-gray-600 mt-4">
             Already have an account?{' '}
-            <span className="text-red-500 hover:underline cursor-pointer">Login</span>
+            <span className="text-red-500 hover:underline cursor-pointer" onClick={() => navigate('/login')}>Login</span>
           </p>
         </div>
       </div>
     </div>
+    </>
   );
 };
 

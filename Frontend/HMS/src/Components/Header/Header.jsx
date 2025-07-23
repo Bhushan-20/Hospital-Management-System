@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { TbLayoutSidebarLeftCollapse } from "react-icons/tb";
 import { MdNotificationsActive } from "react-icons/md";
 import ProfileMenu from './ProfileMenu';
+import { useSelector } from 'react-redux';
 
 const Header = () => {
-  const isLoggedIn = false;
+  const token = useSelector((state) => state.jwt);
+
   return (
     <header className="sticky top-0 z-50 w-full px-6 py-3 bg-white/80 backdrop-blur-md shadow-md border-b border-red-100 flex justify-between items-center">
       
@@ -35,7 +37,7 @@ const Header = () => {
           />
         </div>
 
-        {/* Notifications */}
+        {/* Notifications */}  
         <button
           aria-label="Notifications"
           className="relative w-11 h-11 flex items-center justify-center rounded-xl hover:bg-red-100 transition-all duration-300 group"
@@ -44,16 +46,14 @@ const Header = () => {
           <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-red-500 rounded-full shadow-md animate-pulse"></span>
         </button>
         {/* Profile OR Login Button */}
-        {isLoggedIn ? (
+        {token ? (
           <ProfileMenu />
         ) : (
           <button className="px-5 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl text-sm font-medium transition shadow-md">
             Login
           </button>
         )}
-
-        {/* Profile Menu */}
-        <ProfileMenu />
+        {/* <ProfileMenu /> */}
       </div>
     </header>
   );
