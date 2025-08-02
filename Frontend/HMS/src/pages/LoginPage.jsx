@@ -50,10 +50,6 @@ const LoginPage = () => {
         toast.success("Login successful");
         dispatch(setToken(response));
         dispatch(setUser(response));
-        //console.log(jwtDecode(response));
-
-        navigate("/dashboard");
-
       } catch (error) {
         const errorMessage =
         error?.response?.data?.errorMessage || "Login failed";

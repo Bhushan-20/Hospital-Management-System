@@ -1,6 +1,6 @@
-package com.hms.user.utility;
+package com.hms.profile.utility;
 
-import com.hms.user.exceptions.HmsException;
+import com.hms.profile.exceptions.HmsException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;

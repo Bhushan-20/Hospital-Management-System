@@ -1,4 +1,4 @@
-package com.hms.user.utility;
+package com.hms.profile.utility;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

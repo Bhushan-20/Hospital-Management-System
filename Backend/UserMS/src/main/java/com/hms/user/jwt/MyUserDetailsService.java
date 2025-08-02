@@ -30,6 +30,7 @@ public class MyUserDetailsService implements UserDetailsService {
                     dto.getPassword(),
                     dto.getRole(),
                     dto.getName(),
+                    dto.getProfileId(),
                     Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + dto.getRole().name()))
             );
         } catch (HmsException e) {

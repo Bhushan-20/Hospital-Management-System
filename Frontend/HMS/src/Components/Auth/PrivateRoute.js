@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
 function PrivateRoute({ children }) {
-  const { token } = useSelector((state) => state.jwt);
+  const  token  = useSelector((state) => state.jwt);
   return token ? children : <Navigate to="/login" />;
 }
 

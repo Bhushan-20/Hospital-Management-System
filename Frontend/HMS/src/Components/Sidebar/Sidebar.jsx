@@ -46,9 +46,7 @@ const links = [
 const Sidebar = () => {
   const location = useLocation();
    const user = useSelector((state) => state.user.user);
-useEffect(() => {
-  console.log("User Name", user.name);
-}, [user]);
+
 
 const getAvatarUrlByRole = (role) => {
 

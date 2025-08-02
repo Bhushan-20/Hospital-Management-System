@@ -1,4 +1,6 @@
 /* write your css here */
+@import 'react-phone-input-2/lib/style.css';
+
 @keyframes slide-fade {
   0% {
     opacity: 0;
