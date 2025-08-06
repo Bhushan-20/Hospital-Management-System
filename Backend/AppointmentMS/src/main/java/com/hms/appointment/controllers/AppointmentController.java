@@ -20,7 +20,7 @@ public class AppointmentController {
     private AppointmentService appointmentService;
 
     @PostMapping("/schedule")
-    public ResponseEntity<Long> scheduleAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO){
+    public ResponseEntity<Long> scheduleAppointment(@Validated @RequestBody AppointmentDTO appointmentDTO) throws HmsException {
         return new ResponseEntity<>(appointmentService.scheduleAppointment(appointmentDTO), HttpStatus.CREATED);
     }
 
@@ -32,6 +32,11 @@ public class AppointmentController {
 
     @GetMapping("/get/{appointmentId}")
     public ResponseEntity<AppointmentDTO> getAppointmentById(@PathVariable Long appointmentId) throws HmsException {
+        return new ResponseEntity<>(appointmentService.getAppointmentDetailsById(appointmentId),HttpStatus.OK);
+    }
+
+    @GetMapping("/get/details/{appointmentId}")
+    public ResponseEntity<AppointmentDTO> getAppointmentDetails(@PathVariable Long appointmentId) throws HmsException {
         return new ResponseEntity<>(appointmentService.getAppointmentDetailsById(appointmentId),HttpStatus.OK);
     }
 }

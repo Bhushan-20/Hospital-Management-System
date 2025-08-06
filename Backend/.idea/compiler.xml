@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ProfileMS" />
+        <module name="Eureka_Server" />
       </profile>
       <profile name="Annotation profile for hospital_management_system" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -26,6 +27,7 @@
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="AppointmentMS" options="-parameters" />
+      <module name="Eureka_Server" options="-parameters" />
       <module name="Gateway" options="-parameters" />
       <module name="ProfileMS" options="-parameters" />
       <module name="UserMS" options="-parameters" />

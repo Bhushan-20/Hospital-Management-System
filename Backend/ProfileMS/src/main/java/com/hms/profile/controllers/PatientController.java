@@ -34,4 +34,9 @@ public class PatientController {
             return new ResponseEntity<>(patientService.updatePatient(patientDTO), HttpStatus.OK);
         }
 
+        @GetMapping("/exists/{id}")
+        public ResponseEntity<Boolean> existPatient(@PathVariable (value = "id") Long patientId) throws HmsException {
+            return new ResponseEntity<>(patientService.patientExistorNot(patientId), HttpStatus.OK);
+        }
+
 }
