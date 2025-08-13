@@ -64,7 +64,7 @@ const Profile = () => {
     }
 
     return (
-        <div className="min-h-screen p-4 md:p-8">
+        <div className="min-h-screen p-4 md:p-8 ">
             <div className="max-w-6xl mx-auto">
                 {/* Profile Card */}
                 <div className="bg-white rounded-2xl shadow-xl overflow-hidden transition-all duration-500 hover:shadow-2xl">

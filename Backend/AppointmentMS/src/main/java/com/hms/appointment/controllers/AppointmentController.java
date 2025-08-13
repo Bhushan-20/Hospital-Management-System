@@ -2,6 +2,7 @@ package com.hms.appointment.controllers;
 
 
 import com.hms.appointment.dto.AppointmentDTO;
+import com.hms.appointment.dto.AppointmentDetails;
 import com.hms.appointment.exceptions.HmsException;
 import com.hms.appointment.models.Appointment;
 import com.hms.appointment.services.AppointmentService;
@@ -10,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @Validated
@@ -38,5 +41,10 @@ public class AppointmentController {
     @GetMapping("/get/details/{appointmentId}")
     public ResponseEntity<AppointmentDTO> getAppointmentDetails(@PathVariable Long appointmentId) throws HmsException {
         return new ResponseEntity<>(appointmentService.getAppointmentDetailsById(appointmentId),HttpStatus.OK);
+    }
+
+    @GetMapping("/getAllAppointments/{patientId}")
+    public ResponseEntity<List<AppointmentDetails>> getAllAppointments(@PathVariable Long patientId) throws HmsException {
+        return new ResponseEntity<>(appointmentService.getAllAppointmentDetailsByPatientId(patientId),HttpStatus.OK);
     }
 }

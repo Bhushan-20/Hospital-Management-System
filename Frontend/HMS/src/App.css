@@ -1,6 +1,13 @@
 /* write your css here */
 @import 'react-phone-input-2/lib/style.css';
 
+html, body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden; /* No page scroll */
+}
+
+
 @keyframes slide-fade {
   0% {
     opacity: 0;
@@ -15,3 +22,20 @@
 .animate-slide-fade {
   animation: slide-fade 0.25s ease-out;
 }
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;     /* Firefox */
+}
+
+.sticky-btn {
+  position: sticky;
+  z-index: 10;
+}
+

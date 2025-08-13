@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import rootReducer from "./reducer";
 import { configureStore } from "@reduxjs/toolkit";
 import { Toaster } from "react-hot-toast";
+import {PrimeReactProvider} from 'primereact/api'
 
 const store = configureStore({
   reducer:rootReducer
@@ -16,10 +17,12 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
   <Provider store={store}>
-      <BrowserRouter>
-          <App />
-          <Toaster/>
-      </BrowserRouter>
+    <PrimeReactProvider>
+        <BrowserRouter>
+            <App />
+            <Toaster/>
+        </BrowserRouter>
+    </PrimeReactProvider>
   </Provider>
     
   </React.StrictMode>

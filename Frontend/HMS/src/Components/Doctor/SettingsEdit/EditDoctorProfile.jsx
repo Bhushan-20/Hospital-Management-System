@@ -69,12 +69,6 @@ const EditDoctorProfile = () => {
 
       const updatedDoctor = await updateDoctor({...doctor, ...finalData});
       dispatch(setDoctor(updatedDoctor));
-
-       //updateDoctor({...doctor, ...finalData}).then((data)=>{
-
-      // }).catch((error)=>{
-      //   console.log(error.response.data.errorMessage)
-      // });
       toast.success("Doctor profile updated successfully!");
       navigate("/dashboard/my-profile");
     } catch (error) {

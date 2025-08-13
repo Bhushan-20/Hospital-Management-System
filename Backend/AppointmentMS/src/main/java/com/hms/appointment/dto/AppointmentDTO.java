@@ -1,5 +1,6 @@
 package com.hms.appointment.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.hms.appointment.enums.AppointmentMode;
 import com.hms.appointment.enums.AppointmentStatus;
 import com.hms.appointment.models.Appointment;
@@ -17,6 +18,7 @@ public class AppointmentDTO {
     private Long id;
     private Long patientId;
     private Long doctorId;
+    @JsonFormat(pattern="yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime appointmentTime;
     private AppointmentStatus status;
     private AppointmentMode mode;

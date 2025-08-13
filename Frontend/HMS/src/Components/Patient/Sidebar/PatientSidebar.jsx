@@ -12,7 +12,6 @@ import PatientAvatar from "../../../assets/patient.jpg";
 import DoctorAvatar from "../../../assets/doctor.jpg";
 import Records from "../../../assets/icons/health-report.png"; // ← Add this custom icon
 import Bills from "../../../assets/icons/pay.png";       // ← Add this custom icon
-import Support from "../../../assets/icons/customer-service.png";
 import Profile from "../../../assets/icons/user.png";
 
 
