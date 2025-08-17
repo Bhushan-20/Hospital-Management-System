@@ -17,9 +17,15 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import Edit from "../../../assets/icons/edit2.png";
 import Delete from "../../../assets/icons/delete.png";
-import { ConfirmDialog, confirmDialog } from "primereact/confirmdialog";
-import { FaTimes, FaCalendarDay, FaClock, FaHistory, FaList } from "react-icons/fa";
-import '../../../App.css'
+import { ConfirmDialog } from "primereact/confirmdialog";
+import {
+  FaTimes,
+  FaCalendarDay,
+  FaClock,
+  FaHistory,
+  FaList,
+} from "react-icons/fa";
+import "../../../App.css";
 import {
   cancelAppointment,
   getAllAppointments,
@@ -47,6 +53,51 @@ const Appointment = () => {
     reset,
   } = useForm();
 
+  const fetchAppointments = async () => {
+    setLoading(true);
+    try {
+      // Fetch in parallel
+      const [allAppointments, allDoctors] = await Promise.all([
+        getAllAppointments(user.profileId),
+        getAllDoctors(),
+      ]);
+
+      // Create a lookup for doctors by ID
+      const doctorMap = allDoctors.reduce((map, doc) => {
+        map[doc.id] = doc;
+        return map;
+      }, {});
+
+      // Map appointments with specialization & hospital
+      const mappedAppointments = allAppointments.map((appt) => {
+        const dateObj = new Date(appt.appointmentTime);
+        const doctorInfo = doctorMap[appt.doctorId] || {};
+
+        return {
+          ...appt,
+          specialization: doctorInfo.specialization || "—",
+          hospital: doctorInfo.hospital || "—",
+          date: dateObj.toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          time: dateObj.toLocaleTimeString("en-IN", {
+            hour: "2-digit",
+            minute: "2-digit",
+          }),
+        };
+      });
+
+      setAppointments(mappedAppointments);
+      setDoctors(allDoctors);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching appointments/doctors:", error);
+      setLoading(false);
+    }
+    setLoading(false);
+  };
   // Fetch Appointments & format data
   useEffect(() => {
     const fetchAppointmentsAndDoctors = async () => {
@@ -98,21 +149,53 @@ const Appointment = () => {
     fetchAppointmentsAndDoctors();
   }, [user.profileId]);
 
-  const filteredAppointments = appointments.filter((appt) => {
-    const today = new Date();
-    const apptDate = new Date(appt.appointmentTime);
+  // const filteredAppointments = appointments.filter((appt) => {
+  //   const today = new Date();
+  //   const apptDate = new Date(appt.appointmentTime);
 
-    if (viewMode === "today") {
-      return apptDate.toDateString() === today.toDateString();
-    }
-    if (viewMode === "upcoming") {
-      return apptDate > today;
-    }
-    if (viewMode === "past") {
-      return apptDate < today;
-    }
-    return true;
-  });
+  //   if (viewMode === "today") {
+  //     return apptDate.toDateString() === today.toDateString();
+  //   }
+  //   if (viewMode === "upcoming") {
+  //     return apptDate > today;
+  //   }
+  //   if (viewMode === "past") {
+  //     return apptDate < today;
+  //   }
+  //   return true;
+  // });
+
+  const filteredAppointments =
+    viewMode === "all"
+      ? appointments
+      : appointments
+          .filter((appt) => {
+            const today = new Date();
+            const apptDate = new Date(appt.appointmentTime);
+
+            if (viewMode === "today") {
+              return apptDate.toDateString() === today.toDateString();
+            }
+            if (viewMode === "upcoming") {
+              return apptDate > today;
+            }
+            if (viewMode === "past") {
+              return apptDate < today;
+            }
+            return true;
+          })
+          .sort((a, b) => {
+            const dateA = new Date(a.appointmentTime);
+            const dateB = new Date(b.appointmentTime);
+
+            if (viewMode === "past") {
+              // latest past first
+              return dateB - dateA;
+            } else {
+              // today, upcoming → earliest first
+              return dateA - dateB;
+            }
+          });
 
   const submitProfileForm = async (data) => {
     setLoading(true);
@@ -132,6 +215,7 @@ const Appointment = () => {
       await scheduleAppointment(payload);
       setIsOpen(false);
       toast.success("Appointment Scheduled");
+      fetchAppointments();
       reset();
     } catch (error) {
       toast.error("Failed to schedule appointment");
@@ -240,8 +324,12 @@ const Appointment = () => {
   };
 
   const handleDelete = (rowData) => {
-    setSelectedRow(rowData);
-    setDeleteDialogVisible(true);
+    if (rowData.status == "CANCELLED") {
+      toast.error("Appointment already cancelled");
+    } else {
+      setSelectedRow(rowData);
+      setDeleteDialogVisible(true);
+    }
   };
 
   const confirmDelete = async () => {
@@ -362,28 +450,44 @@ const Appointment = () => {
           <button
             onClick={() => setViewMode("today")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition 
-              ${viewMode === "today" ? "bg-blue-500 text-white shadow" : "bg-gray-100 hover:bg-gray-200"}`}
+              ${
+                viewMode === "today"
+                  ? "bg-blue-500 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
           >
             <FaCalendarDay /> Today
           </button>
           <button
             onClick={() => setViewMode("upcoming")}
             className={`flex items-center gap-2  px-4 py-2 rounded-lg transition 
-              ${viewMode === "upcoming" ? "bg-caribbeangreen-25 text-white shadow" : "bg-gray-100 hover:bg-gray-200"}`}
+              ${
+                viewMode === "upcoming"
+                  ? "bg-richblack-300 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
           >
             <FaClock /> Upcoming
           </button>
           <button
             onClick={() => setViewMode("past")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition 
-              ${viewMode === "past" ? "bg-caribbeangreen-25 text-white shadow" : "bg-gray-100 hover:bg-gray-200"}`}
+              ${
+                viewMode === "past"
+                  ? "bg-pink-500 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
           >
             <FaHistory /> Past
           </button>
           <button
             onClick={() => setViewMode("all")}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition 
-              ${viewMode === "all" ? "bg-caribbeangreen-25 text-white shadow" : "bg-gray-100 hover:bg-gray-200"}`}
+              ${
+                viewMode === "all"
+                  ? "bg-caribbeangreen-200 text-white shadow"
+                  : "bg-gray-100 hover:bg-gray-200"
+              }`}
           >
             <FaList /> All
           </button>
