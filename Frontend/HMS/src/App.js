@@ -16,6 +16,7 @@ import EditProfile from "./Components/Patient/SettingsEdit/EditProfile";
 import DoctorProfile from "./Components/Doctor/Profile/DoctorProfile";
 import EditDoctorProfile from "./Components/Doctor/SettingsEdit/EditDoctorProfile";
 import PatientAppointment from './pages/Patient/PatientAppointment';
+import DoctorAppointment from "./pages/Doctor/DoctorAppointment";
 
 function App() {
   const jwt = useSelector((state) => state.jwt);
@@ -143,7 +144,7 @@ function App() {
             <Route path="appointments"
             element={
               <PrivateRoute>
-                <AdminDashboard/>
+                <DoctorAppointment/>
               </PrivateRoute>
             }/>
             <Route path="records"

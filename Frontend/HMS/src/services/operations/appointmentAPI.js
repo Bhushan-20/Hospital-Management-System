@@ -45,10 +45,20 @@ const getAllAppointments = async (id) => {
     });
 };
 
+const getAllAppointmentsOfDoctor = async (id) => {
+  return axiosInstance
+    .get("/appointment/doctors/getAllAppointments/" + id)
+    .then((response) => response.data)
+    .catch((error) => {
+      throw error;
+    });
+};
+
 export {
   scheduleAppointment,
   cancelAppointment,
   getAppointment,
   getAppointmentDetails,
-  getAllAppointments
+  getAllAppointments,
+  getAllAppointmentsOfDoctor
 };

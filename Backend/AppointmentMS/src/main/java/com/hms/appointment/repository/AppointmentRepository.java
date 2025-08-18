@@ -12,4 +12,8 @@ public interface AppointmentRepository extends CrudRepository<Appointment,Long> 
     @Query("SELECT new com.hms.appointment.dto.AppointmentDetails(a.id, a.patientId, null, null, null, a.doctorId, null, a.appointmentTime, a.status, a.mode, a.reason, a.notes) " +
             "FROM Appointment a WHERE a.patientId = ?1 ORDER BY a.id DESC")
     List<AppointmentDetails> findAllByPatientId(Long patientId);
+
+    @Query("SELECT new com.hms.appointment.dto.AppointmentDetails(a.id, a.patientId, null, null, null, a.doctorId, null, a.appointmentTime, a.status, a.mode, a.reason, a.notes) " +
+            "FROM Appointment a WHERE a.doctorId = ?1")
+    List<AppointmentDetails> findAllByDoctorId(Long doctorId);
 }

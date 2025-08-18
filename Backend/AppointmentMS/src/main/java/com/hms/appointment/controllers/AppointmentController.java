@@ -47,4 +47,9 @@ public class AppointmentController {
     public ResponseEntity<List<AppointmentDetails>> getAllAppointments(@PathVariable Long patientId) throws HmsException {
         return new ResponseEntity<>(appointmentService.getAllAppointmentDetailsByPatientId(patientId),HttpStatus.OK);
     }
+
+    @GetMapping("/doctors/getAllAppointments/{doctorId}")
+    public ResponseEntity<List<AppointmentDetails>> getAllAppointmentsByDoctorId(@PathVariable Long doctorId) throws HmsException {
+        return new ResponseEntity<>(appointmentService.getAllAppointmentDetailsByDoctorId(doctorId),HttpStatus.OK);
+    }
 }
